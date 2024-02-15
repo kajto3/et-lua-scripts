@@ -1,0 +1,795 @@
+---------------------------------------------------------------------------
+-- messages (if you want other messages, feel free to change this part)
+---------------------------------------------------------------------------
+
+-- message types (chat/cp/bp)
+msgtype_save_load        = "cp"
+msgtype_goto_call_goback = "cp"
+msgtype_kill_restriction = "chat"
+msgtype_map_restriction  = "chat"
+
+-- save
+msg_save_while_moving    = "^*You cannot ^?save ^*while you are moving."
+msg_save_while_dead      = "^*You cannot ^?save ^*while you are dead."
+msg_save_as_spec         = "^*You cannot ^?save ^*as a spectator."
+msg_save_done            = "^*Your position has been ^dsaved^*."
+
+-- load
+msg_load_not_saved       = "^*You have to ^?save ^*a position first."
+msg_load_as_spec         = "^*You cannot ^?load ^*as a spectator."
+msg_load_done            = "^*Your position has been ^dloaded^*."
+
+-- goto
+msg_goto_self            = "^*You cannot ^?go to ^*yourself." 
+msg_goto_as_spec         = "^*You cannot ^?go to ^*someone as a spectator."
+msg_goto_spec            = "^*You cannot ^?go to ^*a spectator."
+msg_goto_other_team      = "^*You cannot ^?go to ^*someone of the other team."
+msg_goto_done            = "^*You have been ^dmoved ^*to ^7%s^*."
+msg_goto_unknown         = "^3Goto: ^*Try name again or use slot number"
+
+-- call
+msg_call_self            = "^*You cannot ^?call ^*yourself."
+msg_call_as_spec         = "^*You cannot ^?call ^*someone as a spectator."
+msg_call_spec            = "^*You cannot ^?call ^*a spectator."
+msg_call_other_team      = "^*You cannot ^?call ^*someone of the other team."
+msg_call_done_self       = "^*You have ^dcalled ^7%s^*."
+msg_call_done_target     = "^*You have been ^dcalled ^*by ^7%s^*. Use ^?!goback ^*to go to your previous position."
+msg_call_unknown         = "^3Call: ^*Try name again or use slot number"
+
+-- goback
+msg_goback_not_called    = "^*You have not been ^dcalled ^*before."
+msg_goback_as_spec       = "^*You cannot ^?go back ^*as a spectator."
+msg_goback_done          = "^*You have been ^dmoved ^*to your previous position."
+
+-- kill restriction
+msg_kr_warning           = "^1Warning: ^*Killing players is not allowed on this server."
+msg_kr_warning_final     = "^1Warning: ^*One more kill will get you kicked!"
+msg_kr_ban               = "Kicked for too many kills!"
+
+-- map restriction
+msg_map_restriction      = "^*Voting has been ^1disabled ^*for this map."
+msg_campaign_restriction = "^*Voting has been ^1disabled ^*for this campaign."
+
+-- permadre
+msg_permadre_as_spec = "^*You cannot use ^?permadre ^*as a spectator."
+msg_permadre_on      = "^*Permanent adrenaline switched ^don^*."
+msg_permadre_off     = "^*Permanent adrenaline switched ^?off^*."
+
+---------------------------------------------------------------------------
+-- weapons (don't touch!)
+---------------------------------------------------------------------------
+
+-- all classes
+WP_LUGER                =  2  -- Luger
+WP_COLT                 =  7  -- Colt
+WP_AKIMBO_LUGER         = 38  -- Akimbo Luger
+WP_AKIMBO_COLT          = 37  -- Akimbo Colt
+WP_MP40                 =  3  -- MP40
+WP_THOMPSON			=  8	-- Thompson
+WP_GRENADE_LAUNCHER     =  4  -- Axis Grenades
+WP_GRENADE_PINEAPPLE    =  9  -- Allies Grenade
+
+-- soldier
+WP_PANZERFAUST          =  5  -- Panzerfaust
+WP_FLAMETHROWER         =  6  -- Flamethrower
+WP_MORTAR               = 35  -- Mortar
+WP_MOBILE_MG42          = 31  -- Mobile MG42
+
+-- medic
+WP_MEDIC_SYRINGE        = 11  -- Syringe / Adrenaline
+WP_MEDKIT               = 19  -- Medi Pack
+
+-- engineer
+WP_KAR98                = 23  -- Axis Engi Rifle
+WP_GPG40                = 39  -- Axis Rifle Nade
+WP_CARBINE              = 24  -- Allies Engi Rifle
+WP_M7                   = 40  -- Allies Rifle Nade
+WP_PLIERS               = 21  -- Pliers
+WP_DYNAMITE             = 15  -- Dynamite
+WP_LANDMINE             = 26  -- Landmine
+
+-- fieldops
+WP_AMMO                 = 12  -- Ammo Pack
+WP_SMOKE_MARKER         = 22  -- Airstrike
+
+-- covertops
+WP_STEN                 = 10  -- Sten
+WP_FG42                 = 33  -- FG42
+WP_K43                  = 32  -- Axis Covert Rifle
+WP_GARAND               = 25  -- Allies Covert Rifle
+WP_SATCHEL              = 27  -- Satchel Charge
+WP_SMOKE_BOMB           = 30  -- Smoke
+
+
+---------------------------------------------------------------------------
+-- global variables (no need to change here, it's just the initialization)
+---------------------------------------------------------------------------
+
+-- common variables
+lastCheck    = 0  -- time stamp of last position/ammo check
+check_ms     = 0  -- time interval between pos/ammo check
+
+-- server cvars
+maxclients = 0  -- sv_maxplayers
+players    = {} -- connected players
+
+-- features
+enable_save_load        = 0 -- sl mod enabled?
+enable_goto_call_goback = 0 -- gcg mod enabled?
+enable_killrestriction  = 0 -- kr mod enabled?
+enable_map_restriction  = 0 -- mr mod enabled?
+enable_permadre         = 0 -- pa mod enabled?
+
+-- save/load
+pos_current  = {} -- current player positions
+pos_last     = {} -- previous player positions
+pos_b        = {} -- saved allies player positions
+pos_r        = {} -- saved axis player positions
+pos_b4call_b = {} -- allies player positions before !call
+pos_b4call_r = {} -- axis player positions before !call
+
+disable_saving_moving = 0 -- saving while moving disabled?
+disable_saving_dead   = 0 -- saving while dead disabled?
+
+-- kill restriction
+kill_limit   = 0  -- total kill limit per map
+bantime      = 0  -- temp ban time in seconds
+kills 	 = {} -- players' kills
+
+-- weapons
+ammoclip    = {} -- initial ammo at spawn in weapon
+ammo        = {} -- initial ammo at spawn in extra clips
+tooldisable = {} -- weapon disabled
+
+-- map voting restriction
+disallowed_maps      = {} -- list of disallowed maps
+disallowed_campaigns = {} -- list of disallowed campaigns
+
+-- permadre
+permadre = {} -- list of players who activated perm adre
+
+
+---------------------------------------------------------------------------
+-- helper functions
+---------------------------------------------------------------------------
+
+function playerName(id) -- return a player's name
+
+  local name = et.Info_ValueForKey(et.trap_GetUserinfo(id), "name")
+
+  if name == "" then
+    return "*unknown*"
+  end
+
+  return name
+
+end
+
+function isMoving(id) -- check if player is moving
+
+  if pos_current[id][1] ~= pos_last[id][1] or 
+     pos_current[id][2] ~= pos_last[id][2] or 
+     pos_current[id][3] ~= pos_last[id][3] then
+    return 1
+  else
+    return 0
+  end
+
+end
+
+function isAlive(id) -- returns 1 if the player is alive
+  if et.gentity_get(id, "health") > 0 then
+    return 1
+  else
+    return 0
+  end
+end
+
+function getTeam(id) -- return the player's team
+  return et.gentity_get(id, "sess.sessionTeam")
+end
+
+function getPosition(id) -- return the player's position
+  return et.gentity_get(id, "origin")
+end
+
+function setPosition(id, pos) -- set the player's position
+  et.gentity_set(id, "origin", pos)
+  return 1
+end
+
+function parseString(text) -- splits up a string (taken from KMOD)
+
+  local i = 1
+  local t = {}
+
+  for w in string.gfind(text, "([^%s]+)%s*") do
+    t[i] = w
+    i = i+1
+  end
+
+  return t
+
+end
+
+
+---------------------------------------------------------------------------
+-- main functions
+---------------------------------------------------------------------------
+
+function save(selfID) -- save player position
+
+  -- check if player is moving
+  if disable_saving_moving == 1 and isMoving(selfID) == 1 then
+    et.trap_SendServerCommand(selfID,
+      msgtype_save_load .. "\"" .. msg_save_while_moving .. "\"")
+    return 0
+  end
+
+  -- check if player is dead
+  if disable_saving_dead == 1 and isAlive(selfID) == 0 then
+    et.trap_SendServerCommand(selfID,
+      msgtype_save_load .. "\"" .. msg_save_while_dead .. "\"")
+    return 0
+  end
+
+  -- check for team
+  if getTeam(selfID) == 1 then -- Allies
+    pos_b[selfID] = getPosition(selfID)
+  elseif getTeam(selfID) == 2 then -- Axis
+    pos_r[selfID] = getPosition(selfID)
+  else -- Spectator
+    et.trap_SendServerCommand(selfID, 
+      msgtype_save_load .. "\"" .. msg_save_as_spec .. "\"")
+    return 0
+  end
+
+  et.trap_SendServerCommand(selfID, 
+    msgtype_save_load .. "\"" .. msg_save_done .. "\"")
+  return 1
+
+end
+
+function load(selfID) -- restore a previously saved position
+
+  if getTeam(selfID) == 1 then -- Allies
+    if pos_b[selfID] == nil then -- Position has not been saved before?
+      et.trap_SendServerCommand(selfID, 
+        msgtype_save_load .. "\"" .. msg_load_not_saved .. "\"")
+      return 0
+    else
+      setPosition(selfID, pos_b[selfID])
+      et.trap_SendServerCommand(selfID, 
+        msgtype_save_load .. "\"" .. msg_load_done .. "\"")
+      return 1
+    end
+  elseif getTeam(selfID) == 2 then -- Axis
+    if pos_r[selfID] == nil then -- Position has not been saved before?
+      et.trap_SendServerCommand(selfID, 
+        msgtype_save_load .. "\"" .. msg_load_not_saved .. "\"")
+      return 0
+    else
+      setPosition(selfID, pos_r[selfID])
+      et.trap_SendServerCommand(selfID, 
+        msgtype_save_load .. "\"" .. msg_load_not_done .. "\"")
+      return 1
+    end
+  else -- Spectator
+    et.trap_SendServerCommand(selfID, 
+        msgtype_save_load .. "\"" .. msg_load_as_spec .. "\"")
+    return 0
+  end
+
+end
+
+function gotoplayer(selfID, targetID) -- moves the player to another player's position
+
+  if selfID == targetID then -- check if players are different
+    et.trap_SendServerCommand(selfID, 
+      msgtype_goto_call_goback .. "\"" .. msg_goto_self .. "\"")
+    return 0
+  elseif getTeam(selfID) == 3 then -- Spectator
+    et.trap_SendServerCommand(selfID, 
+      msgtype_goto_call_goback .. "\"" .. msg_goto_as_spec .. "\"")
+    return 0
+  elseif getTeam(targetID) == nil then -- player is not on server
+    et.trap_SendServerCommand(selfID, 
+      "chat \"" .. msg_goto_unknown .. "\"")
+    return 0
+  elseif getTeam(targetID) == 3 then -- Spectator
+    et.trap_SendServerCommand(selfID,
+      msgtype_goto_call_goback .. "\"" .. msg_goto_spec .. "\"")
+    return 0
+  elseif getTeam(selfID) ~= getTeam(targetID) then -- players are not in same team?
+    et.trap_SendServerCommand(selfID, 
+      msgtype_goto_call_goback .. "\"" .. msg_goto_other_team .. "\"")
+    return 0
+  end
+
+  setPosition(selfID, getPosition(targetID))
+  et.trap_SendServerCommand(selfID,
+    string.format(msgtype_goto_call_goback .. "\"" .. msg_goto_done .. "\"", playerName(targetID)))
+
+  return 1
+
+end
+
+function call(selfID, targetID) -- moves a player to the player's own position
+
+  if selfID == targetID then -- check if players are differnet
+    et.trap_SendServerCommand(selfID,
+      msgtype_goto_call_goback .. "\"" .. msg_call_self .. "\"")
+    return 0
+  elseif getTeam(selfID) == 3 then -- Spectator
+    et.trap_SendServerCommand(selfID,
+      msgtype_goto_call_goback .. "\"" .. msg_call_as_spec .. "\"")
+    return 0
+  elseif getTeam(targetID) == nil then -- player is not on server
+    et.trap_SendServerCommand(selfID, 
+      "chat \"" .. msg_call_unknown .. "\"")
+    return 0
+  elseif getTeam(targetID) == 3 then -- Spectator
+    et.trap_SendServerCommand(selfID,
+      msgtype_goto_call_goback .. "\"" .. msg_call_spec .. "\"")
+    return 0
+  elseif getTeam(selfID) ~= getTeam(targetID) then -- players are not in same team?
+    et.trap_SendServerCommand(selfID,
+      msgtype_goto_call_goback .. "\"" .. msg_call_other_team .. "\"")
+    return 0
+  end
+
+  if getTeam(targetID) == 1 then -- Allies
+    pos_b4call_b[targetID] = getPosition(targetID)
+  elseif getTeam(targetID) == 2 then -- Axis
+    pos_b4call_r[targetID] = getPosition(targetID)
+  end
+
+  setPosition(targetID, getPosition(selfID))
+  et.trap_SendServerCommand(selfID,
+    string.format(msgtype_goto_call_goback .. "\"" .. msg_call_done_self .. "\"", playerName(targetID)))
+  et.trap_SendServerCommand(targetID,
+    string.format(msgtype_goto_call_goback .. "\"" .. msg_call_done_target .. "\"", playerName(selfID)))
+
+  return 1
+
+end
+
+function goback(selfID) -- moves the player to the position before he was called
+
+  if getTeam(selfID) == 1 then -- Allies
+    if pos_b4call_b[selfID] == nil then
+      et.trap_SendServerCommand(selfID,
+        msgtype_goto_call_goback .. "\"" .. msg_goback_not_called .. "\"")
+      return 0
+    else
+      setPosition(selfID, pos_b4call_b[selfID])
+      et.trap_SendServerCommand(selfID,
+        msgtype_goto_call_goback .. "\"" .. msg_goback_done .. "\"")
+      return 1
+    end
+  elseif getTeam(selfID) == 2 then -- Axis
+    if pos_b4call_r[selfID] == nil then
+      et.trap_SendServerCommand(selfID,
+        msgtype_goto_call_goback .. "\"" .. msg_goback_not_called .. "\"")
+      return 0
+    else
+      setPosition(selfID, pos_b4call_r[selfID])
+      et.trap_SendServerCommand(selfID, 
+        msgtype_goto_call_goback .. "\"" .. msg_goback_done .. "\"")
+      return 1
+    end
+  else -- Spectator
+    et.trap_SendServerCommand(selfID,
+      msgtype_goto_call_goback .. "\"" .. msg_goback_as_spec .. "\"")
+    return 0
+  end
+
+end
+
+function checkKills(victim, killer) -- check if kill_limit has been reached
+
+  if kill_limit == 0 then -- return if no kill_limit is set
+    return
+  end
+
+  if victim == killer then -- suicide
+    return
+  end
+
+  if killer > maxclients then -- killed by world
+    return
+  end
+
+  -- kill / teamkill happened
+  kills[killer] = kills[killer] +1
+
+  if kills[killer] < kill_limit - 1 and kill_limit > 2 then -- warn player
+    et.trap_SendServerCommand(killer, 
+      msgtype_kill_restriction .. "\"" .. msg_kr_warning .. "\"")
+  elseif kills[killer] < kill_limit then -- warn player a last time
+    et.trap_SendServerCommand(killer, 
+      msgtype_kill_restriction .. "\"" .. msg_kr_warning_final .. "\"")
+  else -- temp ban player
+    et.trap_DropClient(killer, msg_kr_ban, bantime)
+  end
+
+  return
+
+end
+
+function setpermadre(selfID) -- gives perm adre
+
+  if getTeam(selfID) == 3 then -- not possible as spec
+    et.trap_SendServerCommand(selfID,
+      msgtype_goto_call_goback .. "\"" .. msg_permadre_as_spec .. "\"")
+    return 0
+  else -- give permadre
+    if permadre[selfID] == 1 then
+      permadre[selfID] = 0
+      et.trap_SendServerCommand(selfID,
+        msgtype_goto_call_goback .. "\"" .. msg_permadre_off .. "\"")
+    else
+      permadre[selfID] = 1
+      et.trap_SendServerCommand(selfID,
+        msgtype_goto_call_goback .. "\"" .. msg_permadre_on .. "\"")
+    end
+    return 1
+  end
+
+end
+
+
+---------------------------------------------------------------------------
+-- game interaction
+---------------------------------------------------------------------------
+
+function et_InitGame(levelTime, randomSeed, restart) -- runs at map start
+
+ 
+
+  -- get maxclients
+  maxclients = tonumber(et.trap_Cvar_Get("sv_maxclients"))
+
+  -- read config file
+  et.trap_SendConsoleCommand(et.EXEC_APPEND, "exec amm0.cfg\n")
+
+  -- enable/disable features
+  enable_save_load        = tonumber(et.trap_Cvar_Get("btj_enable_save_load"))
+  enable_goto_call_goback = tonumber(et.trap_Cvar_Get("btj_enable_goto_call_goback"))
+  enable_killrestriction  = tonumber(et.trap_Cvar_Get("btj_enable_killrestriction"))
+  enable_ammo_mod         = tonumber(et.trap_Cvar_Get("btj_enable_ammo_mod"))
+  enable_map_restriction  = tonumber(et.trap_Cvar_Get("btj_enable_map_restriction"))
+  enable_permadre         = tonumber(et.trap_Cvar_Get("btj_enable_permadre"))
+
+  -- save/load
+  if enable_save_load == 1 then
+    check_ms = tonumber(et.trap_Cvar_Get("btj_check_ms"))
+    if check_ms < 50 then
+      check_ms = 50
+    end
+
+    disable_saving_moving = 
+      tonumber(et.trap_Cvar_Get("btj_disable_saving_while_moving"))
+    disable_saving_dead   = 
+      tonumber(et.trap_Cvar_Get("btj_disable_saving_while_dead"))
+
+  end
+
+  -- kill restriction
+  if enable_killrestriction == 1 then
+    kill_limit = tonumber(et.trap_Cvar_Get("btj_kill_limit"))
+    if kill_limit < 0 then
+      kill_limit = 0
+    end
+
+    bantime = tonumber(et.trap_Cvar_Get("btj_bantime"))
+    if bantime < 0 then
+      bantime = 0
+    end
+
+    for i = 0, maxclients - 1, 1 do
+      kills[i] = 0
+    end
+  end
+
+  -- initialize ammo number modification
+  if enable_ammo_mod == 1 then
+
+    -- get ammo settings
+    -- common
+    ammoclip[WP_LUGER]             = tonumber(et.trap_Cvar_Get("btj_ammoclip_luger"))
+    ammo    [WP_LUGER]             = tonumber(et.trap_Cvar_Get("btj_ammo_luger"))
+    ammoclip[WP_COLT]              = tonumber(et.trap_Cvar_Get("btj_ammoclip_colt"))
+    ammo    [WP_COLT]              = tonumber(et.trap_Cvar_Get("btj_ammo_colt"))
+    ammoclip[WP_AKIMBO_LUGER]      = tonumber(et.trap_Cvar_Get("btj_ammoclip_akimbo_luger"))
+    ammoclip[WP_AKIMBO_COLT]       = tonumber(et.trap_Cvar_Get("btj_ammoclip_akimbo_colt"))
+    ammo    [WP_MP40]              = tonumber(et.trap_Cvar_Get("btj_ammo_mp40"))
+    ammoclip[WP_MP40]              = tonumber(et.trap_Cvar_Get("btj_ammoclip_mp40"))
+    ammo    [WP_THOMPSON]          = tonumber(et.trap_Cvar_Get("btj_ammo_thompson"))
+    ammoclip[WP_THOMPSON]          = tonumber(et.trap_Cvar_Get("btj_ammoclip_thompson"))
+    ammoclip[WP_GRENADE_LAUNCHER]  = tonumber(et.trap_Cvar_Get("btj_ammoclip_axis_grenades"))
+    ammoclip[WP_GRENADE_PINEAPPLE] = tonumber(et.trap_Cvar_Get("btj_ammoclip_allies_grenades"))
+  
+    -- soldier
+    ammoclip[WP_PANZERFAUST]       = tonumber(et.trap_Cvar_Get("btj_ammoclip_panzerfaust"))
+    ammoclip[WP_FLAMETHROWER]      = tonumber(et.trap_Cvar_Get("btj_ammoclip_flamethrower"))
+    ammo    [WP_MORTAR]            = tonumber(et.trap_Cvar_Get("btj_ammo_mortar"))
+    ammoclip[WP_MOBILE_MG42]       = tonumber(et.trap_Cvar_Get("btj_ammoclip_mg42"))
+    ammo    [WP_MOBILE_MG42]       = tonumber(et.trap_Cvar_Get("btj_ammo_mg42"))
+  
+    -- medic
+    ammoclip[WP_MEDIC_SYRINGE]     = tonumber(et.trap_Cvar_Get("btj_ammoclip_syringe_adre"))
+  
+    -- engineer
+    ammoclip [WP_KAR98]            = tonumber(et.trap_Cvar_Get("btj_ammoclip_axis_engi_rifle"))
+    ammo     [WP_KAR98]            = tonumber(et.trap_Cvar_Get("btj_ammo_axis_engi_rifle"))
+    ammoclip [WP_GPG40]            = tonumber(et.trap_Cvar_Get("btj_ammoclip_axis_rifle_nade"))
+    ammo     [WP_GPG40]            = tonumber(et.trap_Cvar_Get("btj_ammo_axis_rifle_nade"))
+    ammoclip [WP_CARBINE]          = tonumber(et.trap_Cvar_Get("btj_ammoclip_allies_engi_rifle"))
+    ammo     [WP_CARBINE]          = tonumber(et.trap_Cvar_Get("btj_ammo_allies_engi_rifle"))
+    ammoclip [WP_M7]               = tonumber(et.trap_Cvar_Get("btj_ammoclip_allies_rifle_nade"))
+    ammo     [WP_M7]               = tonumber(et.trap_Cvar_Get("btj_ammo_allies_rifle_nade"))
+  
+    -- covertops
+    ammoclip[WP_STEN]              = tonumber(et.trap_Cvar_Get("btj_ammoclip_sten"))
+    ammo    [WP_STEN]              = tonumber(et.trap_Cvar_Get("btj_ammo_sten"))
+    ammoclip[WP_FG42]              = tonumber(et.trap_Cvar_Get("btj_ammoclip_fg42"))
+    ammo    [WP_FG42]              = tonumber(et.trap_Cvar_Get("btj_ammo_fg42"))
+    ammoclip[WP_K43]               = tonumber(et.trap_Cvar_Get("btj_ammoclip_axis_covert_rifle"))
+    ammo    [WP_K43]               = tonumber(et.trap_Cvar_Get("btj_ammo_axis_covert_rifle"))
+    ammoclip[WP_GARAND]            = tonumber(et.trap_Cvar_Get("btj_ammoclip_allies_covert_rifle"))
+    ammo    [WP_GARAND]            = tonumber(et.trap_Cvar_Get("btj_ammo_allies_covert_rifle"))  
+
+
+    -- get disable weapons settings
+    -- medic
+    tooldisable[WP_MEDKIT]       = tonumber(et.trap_Cvar_Get("btj_disable_medpack")) == 1
+
+    -- engineer
+    tooldisable[WP_PLIERS]       = tonumber(et.trap_Cvar_Get("btj_disable_pliers")) == 1
+    tooldisable[WP_DYNAMITE]     = tonumber(et.trap_Cvar_Get("btj_disable_dynamite")) == 1
+    tooldisable[WP_LANDMINE]     = tonumber(et.trap_Cvar_Get("btj_disable_landmine")) == 1
+
+    -- fieldops
+    tooldisable[WP_AMMO]         = tonumber(et.trap_Cvar_Get("btj_disable_ammopack")) == 1
+    tooldisable[WP_SMOKE_MARKER] = tonumber(et.trap_Cvar_Get("btj_disable_airsrtrike")) == 1
+
+    -- covertops
+    tooldisable[WP_SATCHEL]      = tonumber(et.trap_Cvar_Get("btj_disable_satchel")) == 1
+    tooldisable[WP_SMOKE_BOMB]   = tonumber(et.trap_Cvar_Get("btj_disable_smoke")) == 1
+
+  end
+
+  -- initialize map voting restriction
+  if enable_map_restriction == 1 then
+    disallowed_maps      = parseString(tostring(et.trap_Cvar_Get("btj_disallowed_maps")))
+    disallowed_campaigns = parseString(tostring(et.trap_Cvar_Get("btj_disallowed_campaigns")))
+  end
+
+end
+
+function et_Quit()
+  et.trap_SendConsoleCommand(et.EXEC_APPEND, "sets tj_mod \"\"\n")
+end
+
+function et_RunFrame(levelTime) -- runs every server frame
+
+  if (levelTime >= lastCheck + check_ms) then
+
+    lastCheck = levelTime
+
+    if enable_save_load == 1 then -- save/load feature
+
+      for i = 0, maxclients - 1, 1 do
+        if players[i] ~= nil then
+          -- get players' positions
+          pos_last[i]    = pos_current[i]
+          pos_current[i] = getPosition(i)
+        end
+      end
+    end
+
+    if enable_permadre == 1 then -- permanent adre
+      for i = 0, maxclients -1, 1 do
+        if permadre[i] ~= nil then
+          if permadre[i] == 1 then
+            et.gentity_set(i, "ps.powerups", 12, et.trap_Milliseconds() + check_ms + 50)
+          end
+        end
+      end
+    end
+    
+    if enable_ammo_mod == 1 then
+
+      -- check for disabled weapons
+      for i = 1, 40, 1 do
+        if ammoclip[i] ~= nil then
+          if ammoclip[i] == 0 then
+            for j = 0, maxclients - 1, 1 do
+              if players[j] ~= nil and getTeam(j) ~= 3 then
+                et.gentity_set(j, "ps.ammoclip", i, 0)
+              end
+            end
+          elseif ammoclip[i] > 999 then
+            for j = 0, maxclients - 1, 1 do
+              if players[j] ~= nil and getTeam(j) ~= 3 then
+                et.gentity_set(j, "ps.ammoclip", i, 999)
+              end
+            end
+          end
+        end
+        if ammo[i] ~= nil then
+          if ammo[i] == 0 then
+            for j = 0, maxclients - 1, 1 do
+              if players[j] ~= nil and getTeam(j) ~= 3 then
+                et.gentity_set(j, "ps.ammo", i, 0)
+              end
+            end
+          elseif ammo[i] > 999 then
+            for j = 0, maxclients - 1, 1 do
+              if players[j] ~= nil and getTeam(j) ~= 3 then
+                et.gentity_set(j, "ps.ammo", i, 999)
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+
+end
+
+function et_ClientConnect( clientNum, firstTime, isBot ) 
+  players[clientNum] = 1
+end
+
+function et_ClientDisconnect(id) -- client disconnects
+
+  -- reset variables for disconnecting players
+  if enable_save_load == 1 then
+    pos_current[id]  = nil
+    pos_last[id]     = nil
+    pos_b[id]        = nil
+    pos_r[id]        = nil
+  end
+
+  if enable_goto_call_goback == 1 then
+    pos_b4call_b[id] = nil
+    pos_b4call_r[id] = nil
+  end
+
+  if enable_killrestriction == 1 then
+    kills[id] = 0
+  end
+
+  permadre[id] = nil
+
+  players[id] = nil
+
+end
+
+function et_ConsoleCommand() -- get console commands (i.e. Etadmin_mod)
+
+  if enable_goto_call_goback == 1 then -- goto/call/goback feature
+
+    if et.trap_Argv(0) == "goto" then -- get the "goto" command
+      goto(et.trap_Argv(1),et.trap_Argv(2))
+      return 1
+    end
+
+    if et.trap_Argv(0) == "call" then -- get the "call" command
+      call(et.trap_Argv(1), et.trap_Argv(2))
+      return 1
+    end
+
+    if et.trap_Argv(0) == "goback" then -- get the "goback" command
+      goback(et.trap_Argv(1))
+      return 1
+    end
+
+  end
+
+  return 0
+
+end
+
+function et_ClientCommand(clientNum, command) -- get client commands
+
+  if enable_save_load == 1 then -- save/load feature
+
+    if command == "save" then -- get the "/save" command
+      save(clientNum)
+      return 1
+    end
+
+    if command == "load" then -- get the "/load" command
+      load(clientNum)
+      return 1
+    end
+
+  end
+
+  if enable_permadre == 1 then -- permanent adre
+
+    if command == "permadre" then -- get the "/permadre" command
+      setpermadre(clientNum)
+      return 1
+    end
+
+  end
+
+  if enable_map_restriction == 1 then -- map restriction
+
+      if command == "callvote" then
+
+        if et.trap_Argv(1) == "map" then
+
+          for i = 1, 50, 1 do
+            if disallowed_maps[i] == nil then
+              return 0
+            elseif et.trap_Argv(2) == disallowed_maps[i] then
+              et.trap_SendServerCommand(clientNum, 
+                msgtype_map_restriction .. "\"" .. msg_map_restriction .. "\"")
+              return 1
+            end
+          end
+
+        elseif et.trap_Argv(1) == "campaign" then
+          for i = 1, 10, 1 do
+            if disallowed_campaigns[i] == nil then
+              return 0
+            elseif et.trap_Argv(2) == disallowed_campaigns[i] then
+              et.trap_SendServerCommand(clientNum, 
+                msgtype_map_restriction .. "\"" .. msg_campaign_restriction .. "\"")
+              return 1
+            end
+          end
+        end
+
+      end
+
+  end
+
+  return 0
+
+end
+
+function et_Obituary(victim, killer, mod)
+
+  if enable_killrestriction == 1 then -- kill restriction feature
+    checkKills(victim, killer)
+  end
+
+  return 0
+
+end
+
+function et_ClientSpawn(clientNum, revived)
+
+  if enable_ammo_mod == 1 then
+
+    for i = 1, 40, 1 do
+
+      -- set ammo in clip
+      if ammoclip[i] ~= nil and ammoclip[i] >= 0 then
+        et.gentity_set(clientNum, "ps.ammoclip", i, ammoclip[i])
+      end
+
+      -- set ammo in extra clips
+      if ammo[i] ~= nil and ammo[i] >= 0 then
+        et.gentity_set(clientNum, "ps.ammo", i, ammo[i])
+      end
+
+      -- disable tool/weapon
+      if tooldisable[i] ~= nil and tooldisable[i] then
+        et.gentity_set(clientNum, "ps.ammoclip", i, 0)
+        et.gentity_set(clientNum, "ps.ammo", i, 0)
+      end
+
+    end
+
+  end
+
+  return 0
+
+end
