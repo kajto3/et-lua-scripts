@@ -1,0 +1,55 @@
+level    = 0
+name     = ^2G^8uest
+commands = "admintest ammo date forum help levlist listplayers rpos seen showbans sprees"
+commands = "spree_record stats statsme time tk_index"
+flags 	  = 
+greeting = 
+sound	 = 
+
+level    = 1
+name     = ^2Regular ^8Player
+commands = "admintest ammo date forum help levlist listplayers rpos seen showbans sprees"
+commands = "spree_record stats statsme time tk_index"
+flags 	  = 
+greeting = 
+sound	  = 
+
+level    = 2
+name     = ^8Friend
+commands = "admintest ammo date forum help levlist listplayers rpos seen showbans sprees"
+commands = "spree_record stats statsme time tk_index"
+flags 	  = 120
+greeting = 
+sound	  = 
+
+level    = 3
+name     = ^2Tryout ^8Member
+commands = "admintest ammo cancelvote date finger forum help info kick"
+commands = "levlist listplayers mute putteam rpos seen shuffle showbans spec999 sprees"
+commands = "spree_record stats statsme time tk_index unmute warn"
+flags 	  = 120~
+greeting = 
+sound	  = 
+
+level    = 4
+name     = ^8Member
+commands = "admintest ammo cancelvote date finger forum gib help info"
+commands = "kick levlist listplayers mute passvote putteam rename restart rpos seen"
+commands = "shuffle showbans spec999 sprees spree_record start stats statsme"
+commands = "swap time tk_index unmute warn"
+flags 	  = 120~
+greeting = 
+sound	  = 
+
+level    = 5
+name     = ^2Admin
+commands = "admintest ammo ban banmask cancelvote date finger forum gib"
+commands = "goto goback help info iwant kick levlist listadmins"
+commands = "listplayers lock makeshout mute nextmap passvote putteam readconfig"
+commands = "ref removeshout rename reset restart rpos seen setlevel showbans showmask"
+commands = "shuffle slap spec999 specall sprees spree_record start stats"
+commands = "statsme swap time tk_index unban unbanmask unlock unmute"
+commands = "unref warn"
+flags 	  = 1236890~
+greeting = 
+sound	  = 
