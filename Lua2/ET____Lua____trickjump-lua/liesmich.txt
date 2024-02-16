@@ -1,0 +1,74 @@
+How to ETpro Trickjump Server!!
+
+von Jigsaw / www.RoN-Clan.net
+
+
+Hier mal eine kleine Anleitung für die Modifizierung eines Enemy Territory Etpro 3.2.6 Server zu einem Trickjump Server!
+
+Folgende Änderungen sollte man dafür anpassen:
+
+1. ETServer mit Startparameter +fs_game etpro starten
+2. Folgende Variablen in die server.cfg schreiben
+
+Trickjump - Setting: 
+set g_userTimeLimit "100000"
+set g_useralliedrespawntime "1"
+set g_useraxisrespawntime "1"
+set g_MedicChargeTime "1"
+set g_heavyWeaponRestriction "0"
+set g_friendlyFire "0"
+
+Wahlweise kann man noch Weapons teilweise ausstellen wir Rifle usw.
+Gametype und Startmap festlegen:
+
+set g_gametype "2" (exec maprotation.cfg sollte gesetzt werden)
+Hier mal nen Beispiel für eine maprotation.cfg:
+
+set d1  "set g_gametype 2 ; map sphinx ; set nextmap vstr d2"
+set d2  "set g_gametype 2 ; map icejump ; set nextmap vstr d3"
+set d3  "set g_gametype 2 ; map toiletmanfinal ; set nextmap vstr d4"
+set d4  "set g_gametype 2 ; map sohfunjump ; set nextmap vstr d5"
+set d5  "set g_gametype 2 ; map nejijump5_b4 ; set nextmap vstr d6"
+set d6  "set g_gametype 2 ; map mrmen_gamma_final ; set nextmap vstr d7"
+set d7  "set g_gametype 2 ; map masaogamma_v11 ; set nextmap vstr d8"
+set d8  "set g_gametype 2 ; map makemejumpb3 ; set nextmap vstr d9"
+set d9  "set g_gametype 2 ; map LNATrickjump ; set nextmap vstr d10"
+set d10 "set g_gametype 2 ; map labstrickjump ; set nextmap vstr d11"
+set d11 "set g_gametype 2 ; map KoB_Trickjump-Final-1.0 ; set nextmap vstr d12"
+set d12 "set g_gametype 2 ; map indy_final ; set nextmap vstr d13"
+set d13 "set g_gametype 2 ; map ikkigammas ; set nextmap vstr d14"
+set d14 "set g_gametype 2 ; map House_Of_Gamma1 ; set nextmap vstr d15"
+set d15 "set g_gametype 2 ; map hankslide1.15 ; set nextmap vstr d16"
+set d16 "set g_gametype 2 ; map hankjump7.3 ; set nextmap vstr d17"
+set d17 "set g_gametype 2 ; map hankjump3.4 ; set nextmap vstr d18"
+set d18 "set g_gametype 2 ; map hankendless ; set nextmap vstr d19"
+set d19 "set g_gametype 2 ; map chocojump ; set nextmap vstr d20"
+set d20 "set g_gametype 2 ; map [TANC]ToiletmanTJ ; set nextmap vstr d21"
+set d21 "set g_gametype 2 ; map bxjump ; set nextmap vstr d1"Diverse Settings: 
+set pmove_fixed "0"
+set pmove_msec "8"
+set b_fallingbugfix "1"
+set b_fixedphysics "0"
+set b_fixedphysicsfps "125"
+
+Pmove kann man standardmäßig auch auf 1 setzten.
+
+Skills 
+set b_defaultskills "4 0 4 0 0 0 0"
+Battlesense/Medic Level 4
+
+Voting 
+auch sehr wichtig nextmap und timelimit
+Dann gibts noch sogenannte LUA-Module:
+
+Adrenaline Change: 
+More Adrenaline for Medics which is great for Trickjump Servers
+
+/save und /load Funktion: 
+
+Pack die .lua in dein ETPro Verzeichis, und dann setze in der Config auf : set lua_modules "tjmod.lua adrenaline.lua" <- Script Name
+Je nach dem was du nutzt..
+Lua Module,Server.cfg,Maprotation.cfg kommen in den Etpro Ordner und die Maps in den Etmain Ordner! 
+
+
+Gruß Jigsaw

@@ -1,0 +1,128 @@
+1.1.11
+- removed the 'sets' URL, some servers get problems with too long 'sets'
+
+1.1.10
+- fix empty player name if a player disconnects while on a spree with new map
+  record
+- if srv_record is false... don't write the file
+
+1.1.9
+- fixed another missing space
+- color fixes
+- new: allow_tk_revive -- see docs, it's not really that what you think 
+  it is ;)
+
+1.1.8
+- awards for monster revives saved to "awards.txt" ... same as kspree.lua :)
+- fixed typo in changed message from 1.1.7
+
+1.1.7
+- bugfixing
+- untested: only if non zero, the !stats parts should be printed now (i.e. no
+  message about multi revives if the calling player didn't make any, just the
+  number of revives)
+
+1.1.6
+- major speedup reading files, thanks to bennz (now finally split() 
+  is gone :))
+
+1.1.5
+- bugfix for new players :(
+
+1.1.4
+- small speedup
+- fix sometimes working !rsprees
+
+1.1.3
+- use all "local" vars
+- just one saving function for both files
+- minor enhacements (killer <= sv_maxplayers) instead of ~= 1022 or ~= 1023
+
+1.1.2
+- "!stats" ... to see your own multi / monster / normal revive stats
+- reformatted "!rsprees" message
+- expiring (and first seen) of the records
+
+1.1.1
+- err.. fixed uninitialized table
+
+1.1.0
+- renamed 1.02 to 1.1.0 to indicate a new dev cycle ;->
+
+1.02
+- "!rsprees" command which shows the players with the most Monster-Revives, 
+   Multirevives and normal revives
+- "rspreerecords" console command .. same output as above, just on console
+
+1.01
+- some cosmetical changes in some messages
+- splitted the "This is a new map record!" ingame message into a new line
+- released to public
+
+1.0 
+- some cosmetical changes in end of spree messages
+- reformatted '!spree_record' to match the output of etadmin_mod (i.e.
+  alltime stats for map / global)
+
+0.12
+- cosmetical changes on spree msgs (removed extra space after number
+  of revives) 
+- "endofmap" @ "Timelimit"/"Wolf EndRound", stats then printed @ "WeaponStats:"
+- new: client say "!spree_record" (cmd configurable in 'rspree_cmd') 
+  which prints current reviving spree record (this needs testing)
+
+0.11
+- rewritten alltime_stats handling, see "Notes" below about how the 
+  table now is done
+  this affects the date/time of the spree: now when the medic dies 
+  instead of the end of the map..
+  ...oh, and names in spree_cfg are coloured now .)
+- err ... finally moved the medic detection to et_Print() ;-)
+  hopefully this fixes the case that some sprees are not detected...
+
+0.10
+- if client with max_spree disconnects max_spree is resetted... else 
+  the next player on this slot will get the reward 
+- on death of medic: check if it's a new map record and print it
+
+0.9
+- console command w. 'et.EXEC_APPEND, qsay' to queue msg (i.e. print 
+ "Longest reviving spree" msg later than before)
+- sets commands for server mods :o)
+- different positions for multi/monster now configurable
+- new console command "rsprees" ... dumps all current reviving sprees
+- new console command "rspreesall" ... dumps alltime stats
+- + bugfixing
+
+0.8
+- multi/monster revives :) 
+  ... atm w/o sounds, so don't enable or supply your own
+  ("sound/misc/multirevive.wav" and "sound/misc/monsterrevive.wav")
+
+0.7 
+- bugfixing
+
+0.6
+- alltime spree ... saved @ EOL, loaded @ start
+ ... loading works, save needs testing
+ wishlist entry * [!!!]Harlekin: longest map sprees all times 
+
+0.5
+- bugfixing
+
+0.4 
+- end of map announce for longest reviving spree... needs testing :)
+
+0.3
+- bugfixing 
+- new cfg vars: 
+ * spree_pos ... where to send msgs
+ * spree_color ... which color? 
+
+0.2:
+- announce_revives => configurable if revives should be broadcasted
+- now with different spree messages (see R_Sprees below)
+
+0.1: 
+- first "public" version
+

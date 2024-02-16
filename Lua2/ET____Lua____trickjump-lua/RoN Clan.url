@@ -1,0 +1,9 @@
+[DEFAULT]
+BASEURL=http://www.ron-clan.net/
+
+[InternetShortcut]
+URL=http://www.ron-clan.net/
+Modified=000000000000000000
+IDList=
+IconFile=http://www.ron-clan.net/favicon.ico
+IconIndex=1
