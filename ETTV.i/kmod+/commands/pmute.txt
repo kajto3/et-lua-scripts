@@ -1,0 +1,16 @@
+Private message mute:
+1) create pmute.lua
+2) make the lua create a field under global_players_table[victim][pmute] = 1
+3) in console/m.lua add a check for this field, like this:
+if global_players_table[slot][pmute] then return 1 end -- abort exection
+
+now you have a !pmute command that will mute/disable client's private messages.
+
+to create an punmute command:
+1) create punmute.lua
+2) make the lua delete the field: global_players_table[victim][pmute] = nil
+
+thats it.
+dont forget to add chat-prints (<player> private messages has been muted) and checks for the field when trying to delete it
+if global_players_table[victim][pmute] ~= nil then global_players_table[victim][pmute] == nil end
+otherwise trying to use !punmute on a not-muted player will raise error.
